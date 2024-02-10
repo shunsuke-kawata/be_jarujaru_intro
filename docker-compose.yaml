@@ -4,6 +4,10 @@ services:
     build: .
     container_name: 'be-intro'
     working_dir: '/tmp/work/'
-    tty: true
+    env_file:
+      - .env
+    environment:
+      TZ: ${TZ}
     volumes:
       - ./:/tmp/work
+    tty: true
