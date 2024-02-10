@@ -3,13 +3,18 @@ from fastapi import FastAPI
 import uvicorn
 from dotenv import load_dotenv
 
-app = FastAPI()
+from router.youtube import youtube_router
 
+#環境変数の読み込み
 load_dotenv()
+
+app = FastAPI()
+app.include_router(youtube_router)
+
 
 api = os.environ['YOUTUBE_DATA_API_KEY']
 @app.get("/")
-def read_root():
+async def root():
     return {"api": api }
 
 if __name__ == "__main__":
