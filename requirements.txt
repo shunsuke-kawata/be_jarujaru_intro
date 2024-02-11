@@ -3,3 +3,4 @@ uvicorn
 python-dotenv
 google-api-python-client
 requests
+yt-dlp

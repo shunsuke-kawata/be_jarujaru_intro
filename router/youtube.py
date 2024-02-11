@@ -1,16 +1,15 @@
-import os
+import sys
+sys.path.append('../')
+import config
 from fastapi import APIRouter,status
 import json
 from fastapi.responses import JSONResponse
 import requests
 
-from dotenv import load_dotenv
+
+
 
 youtube_router = APIRouter()
-YOUTUBE_BASE_URL = "https://www.googleapis.com/youtube/v3"
-#環境変数の読み込み
-load_dotenv()
-API_KEY = os.environ['YOUTUBE_DATA_API_KEY']
 
 @youtube_router.get("/youtube/", tags=["youtube"])
 async def root():
@@ -18,12 +17,12 @@ async def root():
 
 @youtube_router.get("/youtube/playlists/{channel_id}", tags=["youtube"])
 async def playlists(channel_id):
-    url = f"{YOUTUBE_BASE_URL}/playlists"
+    url = f"{config.YOUTUBE_BASE_URL}/playlists"
     params = {
         'part': 'snippet',
         'maxResults':100,
         'channelId': channel_id,
-        'key': API_KEY
+        'key': config.YOUTUBE_DATA_API_KEY
     }
     response = requests.get(url, params=params)
     if(response.status_code==200):
@@ -37,4 +36,39 @@ async def playlists(channel_id):
             res_endpoint.append(tmp)
         return JSONResponse(status_code=status.HTTP_200_OK, content=res_endpoint)
     else:
-        return JSONResponse(status_code=response.status_code, content=res_endpoint)
+        try:
+            error_content = json.loads(response.content.decode('utf-8')).get('error')
+            error_code = error_content.get('code')
+            error_message = error_content.get('errors')
+            return JSONResponse(status_code=error_code, content=error_message)
+        except:
+            error_message = [
+                {
+                    "message": "Internal Server Error",
+                    "domain": "global",
+                    "reason": "Internal Server Error"
+                }
+            ]
+            return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content=json.loads(error_message))
+        
+@youtube_router.get("/youtube/videos/", tags=["youtube"])
+async def videos(playlist_ids):
+    url = f"{config.YOUTUBE_BASE_URL}/playlistItems"
+    params = {
+        'part': 'snippet',
+        'maxResults':6,
+        'playlistId': playlist_ids,
+        'key': config.YOUTUBE_DATA_API_KEY
+    }
+    response = requests.get(url, params=params)
+    if(response.status_code==200):
+        return JSONResponse(status_code=status.HTTP_200_OK, content='ddd')
+    else:
+        error_message = [
+            {
+                "message": "Internal Server Error",
+                "domain": "global",
+                "reason": "Internal Server Error"
+            }
+        ]
+        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content=json.loads(error_message))

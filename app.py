@@ -12,10 +12,9 @@ app = FastAPI()
 app.include_router(youtube_router)
 
 
-api = os.environ['YOUTUBE_DATA_API_KEY']
 @app.get("/")
 async def root():
-    return {"api": api }
+    return {"root": "jarujaru_intro" }
 
 if __name__ == "__main__":
     uvicorn.run("app:app",port=8000,reload=True)
