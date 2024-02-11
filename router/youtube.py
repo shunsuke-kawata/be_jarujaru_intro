@@ -6,9 +6,6 @@ import json
 from fastapi.responses import JSONResponse
 import requests
 
-
-
-
 youtube_router = APIRouter()
 
 @youtube_router.get("/youtube/", tags=["youtube"])
@@ -56,13 +53,30 @@ async def videos(playlist_ids):
     url = f"{config.YOUTUBE_BASE_URL}/playlistItems"
     params = {
         'part': 'snippet',
-        'maxResults':6,
+        'maxResults':3,
         'playlistId': playlist_ids,
         'key': config.YOUTUBE_DATA_API_KEY
     }
     response = requests.get(url, params=params)
+
     if(response.status_code==200):
-        return JSONResponse(status_code=status.HTTP_200_OK, content='ddd')
+        next_page_token = response.json().get('nextPageToken')
+        print(next_page_token)
+        while(True):
+            if(next_page_token is None):
+                break
+            params = {
+                'part': 'snippet',
+                'maxResults':20,
+                'playlistId': playlist_ids,
+                'key': config.YOUTUBE_DATA_API_KEY,
+                'pageToken':next_page_token
+            }
+            response = requests.get(url, params=params)
+            next_page_token = response.json().get('nextPageToken')
+            print(next_page_token)
+            
+        return JSONResponse(status_code=status.HTTP_200_OK, content=response.json())
     else:
         error_message = [
             {
