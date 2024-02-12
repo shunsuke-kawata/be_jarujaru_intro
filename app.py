@@ -1,20 +1,18 @@
 import os
 from fastapi import FastAPI
 import uvicorn
-from dotenv import load_dotenv
 
-from router.youtube import youtube_router
+from router.youtube_router import youtube_endpoint
+from router.question_router import question_endpoint
 
-#環境変数の読み込み
-load_dotenv()
-
+#アプリケーションの作成,エンドポイントの追加
 app = FastAPI()
-app.include_router(youtube_router)
-
+app.include_router(youtube_endpoint)
+app.include_router(question_endpoint)
 
 @app.get("/")
 async def root():
-    return {"root": "jarujaru_intro" }
+    return {"root": "jarujaru-intro"}
 
 if __name__ == "__main__":
     uvicorn.run("app:app",port=8000,reload=True)
