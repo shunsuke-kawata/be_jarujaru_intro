@@ -26,13 +26,28 @@ def playlists(channel_id):
     response = requests.get(url, params=params)
     if(response.status_code==status.HTTP_200_OK):
         items = response.json().get('items')
-        res_endpoint = []
-        for item in items:    
-            tmp = {
-                'id':item.get('id'),
-                'title':item.get('snippet').get('title')
+        res_endpoint = {}
+        for item in items:
+            id = item.get('id')
+            playlist_url = f"{config.YOUTUBE_BASE_URL}/playlistItems"
+            params = {
+                'part': 'snippet',
+                'maxResults':100,
+                'playlistId': id,
+                'key': config.YOUTUBE_DATA_API_KEY
             }
-            res_endpoint.append(tmp)
+            results_in_tower = config.JARUJARU_TOWER_PLAYLISTS.get(id)
+            results_in_island = config.JARUJARU_ISLAND_PLAYLISTS.get(id)
+            if(results_in_tower is None and results_in_island is None):
+                continue
+            response = requests.get(playlist_url, params=params)
+            if(response.status_code==status.HTTP_200_OK):
+                total_results = response.json().get('pageInfo').get('totalResults')
+                tmp_value = {
+                    'title':item.get('snippet').get('title'),
+                    'total_results':total_results
+                }
+                res_endpoint[id] = tmp_value
         return JSONResponse(status_code=status.HTTP_200_OK, content=res_endpoint)
     else:
         try:
@@ -128,3 +143,42 @@ def playlist_items(num: int = Query(..., title="Number of items", description="T
             "reason": "An error occurred while creating the question"
         }
         return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content=error_message)
+
+@youtube_endpoint.get("/youtube/playlistInfo/{playlist_id}", tags=["youtube"])
+def playlist_info(playlist_id):
+    results_in_tower = config.JARUJARU_TOWER_PLAYLISTS.get(playlist_id)
+    results_in_island = config.JARUJARU_ISLAND_PLAYLISTS.get(playlist_id)
+    if(results_in_tower is None and results_in_island is None):
+            error_message = {
+                "message": "Bad Request",
+                "domain": "global",
+                "reason": "playlist_id is invalid"
+            }
+            
+            return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content=error_message)
+    
+    url = f"{config.YOUTUBE_BASE_URL}/playlistItems"
+    params = {
+        'part': 'snippet',
+        'maxResults':1,
+        'playlistId': playlist_id,
+        'key': config.YOUTUBE_DATA_API_KEY
+    }
+    response = requests.get(url, params=params)
+    if(response.status_code==status.HTTP_200_OK):
+        total_results = response.json().get('pageInfo').get('totalResults')
+        
+        content = {
+            'playlist_id':playlist_id,
+            'total_results':total_results
+        }
+        
+        return JSONResponse(status_code=status.HTTP_200_OK,content=content)
+    else:
+        error_message = {
+            "message": "Internal Server Error",
+            "domain": "global",
+            "reason": "An error occurred while getting infomation"
+        }
+        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content=error_message)
+    
