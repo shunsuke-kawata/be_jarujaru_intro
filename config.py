@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 #envファイルから環境変数の読み込み
 load_dotenv()
 
+PORT = os.environ['BACKEND_PORT']
+
 YOUTUBE_DATA_API_KEY = os.environ['YOUTUBE_DATA_API_KEY']
 BACKEND_SERVER_URL = os.environ['BACKEND_SERVER_URL']
 

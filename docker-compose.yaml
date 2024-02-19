@@ -1,7 +1,9 @@
 version: '3'
 services:
-  python3:
-    build: .
+  be-app:
+    build: 
+      context: ./
+      dockerfile: Dockerfile
     container_name: 'be-intro'
     working_dir: '/tmp/work/'
     env_file:
@@ -10,4 +12,22 @@ services:
       TZ: ${TZ}
     volumes:
       - ./:/tmp/work
+    ports:
+      - "${BACKEND_PORT}:${BACKEND_PORT}" 
+    tty: true
+
+  fe-app:
+    build:
+      context: ../fe_jarujaru_intro
+      dockerfile: Dockerfile
+    container_name: 'fe-intro'
+    working_dir: '/tmp/work/'
+    env_file:
+      - .env
+    environment:
+      TZ: ${TZ}
+    volumes:
+      - ../fe_jarujaru_intro/:/tmp/work
+    ports:
+      - "${FRONTEND_PORT}:${FRONTEND_PORT}" 
     tty: true

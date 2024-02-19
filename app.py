@@ -2,6 +2,7 @@ import os
 from fastapi import FastAPI
 import uvicorn
 
+import config
 from router.youtube_router import youtube_endpoint
 from router.question_router import question_endpoint
 
@@ -15,4 +16,4 @@ async def root():
     return {"root": "jarujaru-intro"}
 
 if __name__ == "__main__":
-    uvicorn.run("app:app",port=8000,reload=True)
+    uvicorn.run("app:app",host="0.0.0.0",port=int(config.PORT),reload=True)

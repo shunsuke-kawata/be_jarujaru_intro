@@ -17,3 +17,7 @@ COPY ./* /tmp/work/
 RUN pip install --upgrade pip
 RUN pip install --upgrade setuptools
 RUN pip install -r requirements.txt
+
+CMD ["python", "app.py"]
+
+EXPOSE 8000
