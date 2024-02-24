@@ -129,6 +129,7 @@ def download(playlist_id: List[str] = Query(..., title="Playlist IDs", descripti
      }
     return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content=error_message)
 
+#idを指定してmp3ファイルを返却する
 @question_endpoint.get("/question/fetch/{video_id}", tags=["question"])
 def fetch(video_id):
     mp3_path = f"./origin_mp3/{video_id}.mp3"

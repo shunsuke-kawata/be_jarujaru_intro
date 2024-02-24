@@ -5,9 +5,26 @@ import uvicorn
 import config
 from router.youtube_router import youtube_endpoint
 from router.question_router import question_endpoint
+from fastapi.middleware.cors import CORSMiddleware
+
+#CORSの設定
+origins = [
+    config.FRONTEND_SERVER_URL,
+    config.BACKEND_SERVER_URL,
+    "http://localhost",
+    "http://localhost:8080",
+]
 
 #アプリケーションの作成,エンドポイントの追加
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.include_router(youtube_endpoint)
 app.include_router(question_endpoint)
 
