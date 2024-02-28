@@ -150,6 +150,7 @@ def fetch(video_id):
         return_buttfer = io.BytesIO()
         trimmed_mp3.export(return_buttfer, format="mp3")
         return_buttfer.seek(0)
+        os.remove(mp3_path)
         return Response(content=return_buttfer.getvalue(), media_type="audio/mp3")
         
     except:
