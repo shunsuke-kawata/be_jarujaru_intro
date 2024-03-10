@@ -4,3 +4,4 @@
 url.txt
 *.mp3
 .DS_Store
+/test/*/

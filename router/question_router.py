@@ -11,7 +11,7 @@ import random
 import io
 from pydub import AudioSegment
 
-def get_infomation_of_playlist(playlist_url):
+def get_infomation_of_playlist(playlist_url:str):
     # オプションを指定
     ydl_opts = {
         'quiet': True,
@@ -23,6 +23,49 @@ def get_infomation_of_playlist(playlist_url):
         playlist_info = ydl.extract_info(playlist_url, download=False)
         return playlist_info
 
+def get_answer_title(original_title:str,group:int):
+    return_title = ""
+    if(group==1):
+        start_i = original_title.find('『')
+        end_i = original_title.find('』')
+        if(end_i==-1):
+            end_i = original_title.find('【')
+        return_title = original_title[start_i+1:end_i]
+    elif(group==2):
+        str_end = original_title[-1]
+        if(str_end=='】'):
+            start_i = original_title.find('】',4)
+            end_i = original_title.find('【',4)
+        elif(str_end=='』'):
+            start_i = original_title.find('『')
+            end_i = original_title.find('』')
+        else:
+            start_i = original_title.find('】',4)
+            end_i = len(original_title)
+        return_title = original_title[start_i+1:end_i]
+    elif(group==3):
+        start_i = original_title.find('『')
+        end_i = original_title.find('』')
+        if(start_i==-1 and end_i==-1):
+            start_i = original_title.find('】',4)
+            end_i = len(original_title)
+        return_title = original_title[start_i+1:end_i]
+    elif(group==4):
+        start_i = original_title.find('『')
+        end_i = original_title.find('』')
+        brackets_flag = original_title.find('【',4)
+        
+        if(end_i==-1 and brackets_flag==-1):
+            return_title = original_title
+        elif(end_i==-1 and brackets_flag!=-1):
+            return_title = original_title[:brackets_flag]
+        else:
+            return_title = original_title[start_i+1:end_i]
+    elif(group==5):
+        pass
+    return return_title
+
+    
 def download_mp3(playlist_url,playlist_items,max_downloads=1):
     #オプションを指定
     ydl_opts = {
@@ -39,6 +82,7 @@ def download_mp3(playlist_url,playlist_items,max_downloads=1):
         playlist_info = ydl.extract_info(playlist_url, download=True)
         return playlist_info
 
+#分割したエンドポイントの作成
 question_endpoint = APIRouter()
 
 @question_endpoint.get("/question/", tags=["question"])
@@ -113,9 +157,24 @@ def download(playlist_id: List[str] = Query(..., title="Playlist IDs", descripti
         video_info = result_info.get('entries')[0]
         id = video_info.get('id')
         title = video_info.get('title')
+        group = None
+        if(config.JARUJARU_TOWER_PLAYLISTS.get(selected_playlist_id) is not None):
+            group = config.JARUJARU_TOWER_PLAYLISTS.get(selected_playlist_id).get('group')
+
+        elif(config.JARUJARU_ISLAND_PLAYLISTS.get(selected_playlist_id) is not None):
+            group = config.JARUJARU_ISLAND_PLAYLISTS.get(selected_playlist_id)
+        if(group is None):
+            error_message = {
+                "message": "Internal Server Error",
+                "domain": "global",
+                "reason": "An error occurred while creating the question"
+            }
+            return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content=error_message)
+
+        answer_title = get_answer_title(original_title=title,group=group)
         question_dict = {
             'id':id,
-            'title':title,
+            'title':answer_title,
             'original_file_path':f"./origin_mp3/{id}.mp3"
         }
         # ローカルのMP3ファイルをバイナリモードで読み込み
@@ -139,8 +198,8 @@ def fetch(video_id):
 
     origimnal_mp3 = AudioSegment.from_file(file=mp3_path, format="mp3")
     
-    if(origimnal_mp3.duration_seconds>120):
-        trimmed_mp3 = origimnal_mp3[:120*1000]
+    if(origimnal_mp3.duration_seconds>180):
+        trimmed_mp3 = origimnal_mp3[:180*1000]
     else:
         trimmed_mp3 = origimnal_mp3
     
