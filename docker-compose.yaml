@@ -1,11 +1,9 @@
-version: '3'
 services:
   be-app:
     build: 
       context: ./
       dockerfile: Dockerfile
     container_name: 'be-intro'
-    working_dir: '/tmp/work/'
     env_file:
       - .env
     environment:
@@ -21,7 +19,6 @@ services:
       context: ../fe_jarujaru_intro
       dockerfile: Dockerfile
     container_name: 'fe-intro'
-    working_dir: '/tmp/work/'
     env_file:
       - .env
     environment:
