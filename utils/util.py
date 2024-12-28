@@ -33,7 +33,6 @@ def get_infomation_of_playlist(playlist_url:str):
         playlist_info = ydl.extract_info(playlist_url, download=False)
         return playlist_info
   
-  
 #youtube公式の動画タイトルからネタタイトルを抽出する関数  
 def get_answer_title(original_title:str,group:int):
     return_title = ""

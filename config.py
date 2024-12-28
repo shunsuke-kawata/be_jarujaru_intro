@@ -1,4 +1,3 @@
-import json
 import os
 from dotenv import load_dotenv
 
@@ -7,9 +6,9 @@ load_dotenv()
 
 PORT = os.environ['BACKEND_PORT']
 
-YOUTUBE_DATA_API_KEY = os.environ['YOUTUBE_DATA_API_KEY']
 FRONTEND_SERVER_URL = os.environ['FRONTEND_SERVER_URL']
 BACKEND_SERVER_URL = os.environ['BACKEND_SERVER_URL']
+FIREBASE_CREDENTIALS_PATH = os.environ['FIREBASE_CREDENTIALS_PATH']
 
 JARUJARU_TOWER_CHANNEL_ID = 'UChwgNUWPM-ksOP3BbfQHS5Q'
 JARUJARU_ISLAND_CHANNEL_ID = 'UCf-wG6PlxW7rpixx1tmODJw'
