@@ -1,5 +1,11 @@
+import base64
+import os
 import re
 from yt_dlp import YoutubeDL,utils
+from cryptography.fernet import Fernet
+import sys
+sys.path.append('../')
+import config
 
 #動画音声を取得する関数
 def download_mp3(playlist_url:str, playlist_items:int, max_downloads=1):
@@ -78,3 +84,53 @@ def get_answer_title(original_title:str,group:int):
     elif(group==5):
         pass
     return return_title
+
+def generate_fernet_key_from_env() -> bytes:
+
+    # 環境変数から文字列を取得
+    key_str = config.DECRYPTION_KEY
+    if not key_str:
+        raise ValueError(f"環境変数 '{key_str}' が設定されていません。")
+
+    # 必要に応じて長さを32バイトに調整
+    key_bytes = key_str.encode()
+    padded_key = key_bytes.ljust(32, b' ')[:32]  # 長さが32バイトになるように調整
+
+    # Base64エンコード
+    fernet_key = base64.urlsafe_b64encode(padded_key)
+    return fernet_key
+
+def encrypt_string(plaintext:str, key:str)->str:
+    
+    # Fernetオブジェクトを作成
+    f = Fernet(key)
+    
+        # メッセージをバイト列に変換
+    plaintext_bytes = plaintext.encode()
+
+    # メッセージを暗号化
+    encrypted_message = f.encrypt(plaintext_bytes)
+
+    #暗号化キーを生成
+    
+    return encrypted_message
+
+def decrypt_string(encrypted_message:str, key:str)->str:
+    # Fernetオブジェクトを作成
+    f = Fernet(bytes(key))
+    
+    # メッセージを復号
+    decrypted_message = f.decrypt(encrypted_message)
+    
+    # バイト列を文字列に変換
+    plaintext = decrypted_message.decode()
+    
+    return plaintext
+
+a = "aaaaa"
+print("平文",a)
+key = generate_fernet_key_from_env()
+b = encrypt_string(a,key)
+print("暗号化",b)
+c = decrypt_string(b,key)
+print("複合",c)

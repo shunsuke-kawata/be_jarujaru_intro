@@ -17,12 +17,9 @@ async def get_all_users(skip: int = Query(0), limit: int = Query(10)):
     try: 
         # FirebaseUserクラスのインスタンスを生成
         firebase_user = FirebaseUser()
-        
-        print(firebase_user)
-        
+                
         # ユーザ情報を取得
         users = firebase_user.read_all_users()
-        print(users)
         return JSONResponse(status_code=status.HTTP_200_OK,content=users[skip:skip+limit])
     except Exception as e:
         return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,content={"message":str(e)})
@@ -41,6 +38,7 @@ async def get_user_by_id(user_id:str):
         return JSONResponse(status_code=status.HTTP_200_OK,content=user)
     except Exception as e:
         return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,content={"message":str(e)})
+    
 #GET:ユーザ名を使用してユーザを取得
 @users_endpoint.get("/users/username/{username}", tags=["users"])
 async def get_user_by_username(username:str):
@@ -171,4 +169,36 @@ async def delete_play_data(user_id:str):
             return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,content={"message":"Failed to delete play data"})
     except Exception as e:
         return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,content={"message":str(e)})
-    
+
+#POST:ログイン
+@users_endpoint.post("/auth/login", tags=["auth"])
+async def login(username:str,password:str):
+    try:
+        if not username or not password:
+            return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST,content={"message":"Username and password are required"})
+        
+        # FirebaseUserクラスのインスタンスを生成
+        firebase_user = FirebaseUser()
+        
+        # ユーザ情報を取得
+        user = firebase_user.read_user_by_username(username)
+        if user is None:
+            return JSONResponse(status_code=status.HTTP_404_NOT_FOUND,content={"message":"User not found"})
+        
+        if user.get('password') == password:
+            return JSONResponse(status_code=status.HTTP_200_OK,content={"message":"Login successful","user_id":user.get('id'),"username":user.get('username')})
+        else:
+            return JSONResponse(status_code=status.HTTP_401_UNAUTHORIZED,content={"message":"Invalid password"})
+    except Exception as e:
+        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,content={"message":str(e)})
+
+#POST:ログアウト
+@users_endpoint.post("/auth/logout", tags=["auth"])
+async def logout(username:str):
+    try:
+        if not username:
+            return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST,content={"message":"Username is required"})
+        
+        return JSONResponse(status_code=status.HTTP_200_OK,content={"message":"Logout successful"})
+    except Exception as e:
+        return JSONResponse(status_code=status.HTTP_200_OK,content={"message":str(e)})

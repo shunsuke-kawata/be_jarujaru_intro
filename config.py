@@ -1,4 +1,5 @@
 import os
+import json
 from dotenv import load_dotenv
 
 #envファイルから環境変数の読み込み
@@ -13,6 +14,12 @@ FIREBASE_CREDENTIALS_PATH = os.environ['FIREBASE_CREDENTIALS_PATH']
 #firebase認証情報の絶対パス
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 FIREBASE_CREDENTIALS_ABS_PATH = os.path.join(BASE_DIR, FIREBASE_CREDENTIALS_PATH)
+
+firebase_cred = open(FIREBASE_CREDENTIALS_ABS_PATH , 'r') #ここが(1)
+firebase_cred_json = json.load(firebase_cred) 
+#firebaseのprivate_key_idの文字列を暗号化のキーとして使用する
+DECRYPTION_KEY = firebase_cred_json['private_key_id']
+
 
 JARUJARU_TOWER_CHANNEL_ID = 'UChwgNUWPM-ksOP3BbfQHS5Q'
 JARUJARU_ISLAND_CHANNEL_ID = 'UCf-wG6PlxW7rpixx1tmODJw'
