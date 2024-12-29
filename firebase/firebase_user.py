@@ -1,6 +1,7 @@
 import os
 import sys
 import uuid
+
 sys.path.append('../')
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from firebase.firebase_util import FirebaseUtil
@@ -19,7 +20,7 @@ class FirebaseUser:
         return r_data is not None and len(r_data)>0 
     
     #ユーザーを作成する関数
-    def create_user(self, username:str, password:str)->bool:
+    def create_user(self, username:str, encrypted_password:str)->bool:
         
         is_exist = self.is_exist_user(username)
         if is_exist:
@@ -31,14 +32,13 @@ class FirebaseUser:
         init_user_data = {
             'id':user_id,
             'username' :username,
-            'password': password,
+            'encrypted_password': encrypted_password,
             'playdata' : [],
         }
         
         return self._fb_util.create_document(collection_name='userdata',document_id=user_id, datum=init_user_data)
     
     def read_all_users(self)->list[dict]:
-        print(1111)
         return self._fb_util.read_all_documents(collection_name='userdata')
     
     def read_user_by_id(self, user_id:str)->dict:
@@ -66,7 +66,5 @@ class FirebaseUser:
     
 if __name__ == '__main__':
     fb_user = FirebaseUser()
-    # print(fb_user.create_user('test_user','test_password'))
     print(fb_user.read_user_by_username('test_user'))
-    # print(fb_user.add_play_data('f94040b5-4480-4912-9d6b-11d80bc2a444',{'id': 'aaaaaa', 'answer_array': [{'is_correct': True, 'id': 'id'}]}))
     print(fb_user.delete_user('f94040b5-4480-4912-9d6b-11d80bc2a444'))

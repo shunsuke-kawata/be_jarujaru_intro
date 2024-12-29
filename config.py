@@ -15,7 +15,7 @@ FIREBASE_CREDENTIALS_PATH = os.environ['FIREBASE_CREDENTIALS_PATH']
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 FIREBASE_CREDENTIALS_ABS_PATH = os.path.join(BASE_DIR, FIREBASE_CREDENTIALS_PATH)
 
-firebase_cred = open(FIREBASE_CREDENTIALS_ABS_PATH , 'r') #ここが(1)
+firebase_cred = open(FIREBASE_CREDENTIALS_ABS_PATH , 'r')
 firebase_cred_json = json.load(firebase_cred) 
 #firebaseのprivate_key_idの文字列を暗号化のキーとして使用する
 DECRYPTION_KEY = firebase_cred_json['private_key_id']

@@ -57,7 +57,7 @@ class FirebaseUtil:
     #READ:特定のキーに対応するドキュメントを検索して取得
     def read_documents_by_word(self, collection_name:str, key:str, word:str)->list[dict]:
         try:
-            data = self._db.collection(collection_name).where(key, '==', word).get()
+            data = self._db.collection(collection_name).where(filter=firestore.FieldFilter(key, '==', word)).get()
             return [doc.to_dict() for doc in data]
         except Exception as e:
             print(e)
