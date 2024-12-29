@@ -1,18 +1,29 @@
+import os
 import sys
 sys.path.append('../')
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import config
 from firebase_admin import firestore
 import firebase_admin
 from firebase_admin import credentials
 
 class FirebaseUtil:
-    def __init__(self):
+    def __init__(self)->None:
         self._db = self.init_firebase()
+    
+    def __del__(self)->None:
+        try:
+            firebase_admin.delete_app(firebase_admin.get_app())
+        except Exception as e:
+            print(e)
+    
+    def get_db(self)->firestore.client:
+        return self._db
     
     #接続されたDBオブジェクトを返却する関数
     def init_firebase(self)->firestore.client:
         try:
-            cred = credentials.Certificate(config.FIREBASE_CREDENTIALS_PATH)
+            cred = credentials.Certificate(config.FIREBASE_CREDENTIALS_ABS_PATH)
             firebase_admin.initialize_app(cred)
             db = firestore.client()
             return db
@@ -20,10 +31,14 @@ class FirebaseUtil:
             return None
 
     #READ:全てのドキュメントを取得
-    def read_all_documents(self, collection_name)->dict:
+    def read_all_documents(self, collection_name)->list[dict]:
         try:
+            a = self.get_db()
+            print(a)
             collection_ref = self._db.collection(collection_name)
+            print(11,collection_ref)
             documents = collection_ref.get()
+            print(22,documents)
             data = [doc.to_dict() for doc in documents]
             return data
         except Exception as e:
@@ -38,7 +53,16 @@ class FirebaseUtil:
         except Exception as e:
             print(e)
             return None
-    
+        
+    #READ:特定のキーに対応するドキュメントを検索して取得
+    def read_documents_by_word(self, collection_name:str, key:str, word:str)->list[dict]:
+        try:
+            data = self._db.collection(collection_name).where(key, '==', word).get()
+            return [doc.to_dict() for doc in data]
+        except Exception as e:
+            print(e)
+            return None
+        
     #CREATE:ドキュメントを作成
     def create_document(self, collection_name:str,document_id:str,datum:dict)->bool:
         try:

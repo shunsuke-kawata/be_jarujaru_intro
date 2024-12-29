@@ -1,9 +1,11 @@
 import os
+import sys
 from fastapi import FastAPI
 import uvicorn
-
+sys.path.append('../')
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import config
-from router.youtube_router import youtube_endpoint
+from router.user_router import users_endpoint
 from router.question_router import question_endpoint
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -24,8 +26,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-app.include_router(youtube_endpoint)
+app.include_router(users_endpoint)
 app.include_router(question_endpoint)
 
 @app.get("/")

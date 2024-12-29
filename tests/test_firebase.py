@@ -3,7 +3,7 @@ sys.path.append('../')
 
 import pytest
 from unittest.mock import patch, MagicMock
-from firebase_user import FirebaseUser  # クラス定義があるファイル名に置き換えてください
+from firebase.firebase_user import FirebaseUser  # クラス定義があるファイル名に置き換えてください
 
 @pytest.fixture
 @patch("firebase_util.FirebaseUtil")
