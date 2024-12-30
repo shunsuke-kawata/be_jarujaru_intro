@@ -171,13 +171,3 @@ async def login(login_request: LoginRequest):
             return JSONResponse(status_code=status.HTTP_401_UNAUTHORIZED, content={"message": "Invalid password"})
     except Exception as e:
         return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"message": str(e)})
-
-# POST: ログアウト
-@users_endpoint.post("/auth/logout", tags=["auth"])
-async def logout(logout_request: LogoutRequest):
-    try:
-        if not logout_request.username:
-            return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content={"message": "Username is required"})
-        return JSONResponse(status_code=status.HTTP_200_OK, content={"message": "Logout successful"})
-    except Exception as e:
-        return JSONResponse(status_code=status.HTTP_200_OK, content={"message": str(e)})

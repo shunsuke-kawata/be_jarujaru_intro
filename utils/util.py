@@ -126,11 +126,3 @@ def decrypt_string(encrypted_message:str, key:str)->str:
     plaintext = decrypted_message.decode()
     
     return plaintext
-
-# a = "aaaaa"
-# print("平文",a)
-# key = generate_fernet_key_from_env()
-# b = encrypt_string(a,key)
-# print("暗号化",b)
-# c = decrypt_string(b,key)
-# print("複合",c)

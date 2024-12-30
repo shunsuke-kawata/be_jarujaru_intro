@@ -40,7 +40,6 @@ async def download(playlist_id: List[str] = Query(..., title="Playlist IDs")):
         video_info = result_info['entries'][0]
         video_id = video_info['id']
         title = video_info['title']
-        print(selected_playlist_id)
         if(config.JARUJARU_TOWER_PLAYLISTS.get(selected_playlist_id) is not None):
             group = config.JARUJARU_TOWER_PLAYLISTS.get(selected_playlist_id).get('group')
 
@@ -56,6 +55,7 @@ async def download(playlist_id: List[str] = Query(..., title="Playlist IDs")):
             'title': answer_title,
             'original_file_path': f"./origin_mp3/{video_id}.mp3"
         }
+        print(question_dict)
 
         return JSONResponse(status_code=status.HTTP_200_OK, content=question_dict)
 
