@@ -1,0 +1,30 @@
+services:
+  be-app:
+    build: 
+      context: ./
+      dockerfile: Dockerfile
+    container_name: 'be-intro'
+    env_file:
+      - .env
+    environment:
+      TZ: ${TZ}
+    volumes:
+      - ./:/tmp/work
+    ports:
+      - "${BACKEND_PORT}:${BACKEND_PORT}" 
+    tty: true
+
+  fe-app:
+    build:
+      context: ../fe_jarujaru_intro
+      dockerfile: Dockerfile
+    container_name: 'fe-intro'
+    env_file:
+      - .env
+    environment:
+      TZ: ${TZ}
+    volumes:
+      - ../fe_jarujaru_intro/:/tmp/work
+    ports:
+      - "${FRONTEND_PORT}:${FRONTEND_PORT}" 
+    tty: true

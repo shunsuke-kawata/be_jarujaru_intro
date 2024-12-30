@@ -1,1 +1,2 @@
 # be_jarujaru_intro
+イントロアプリのバックエンド
