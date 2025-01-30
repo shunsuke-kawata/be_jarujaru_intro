@@ -54,12 +54,22 @@ class FirebaseUser:
     def update_user(self, user_id:str, key:str, value:dict)->bool:
         return self._fb_util.update_document(collection_name='userdata',document_id=user_id,key=key,value=value)
     
-    def add_play_data(self, user_id:str, play_datum:dict)->bool:
-        user_data = self._fb_util.read_document_by_id(collection_name='userdata',document_id=user_id)
+    def add_play_data(self, user_id: str, play_datum: dict) -> bool:
+        user_data = self._fb_util.read_document_by_id(collection_name='userdata', document_id=user_id)
         if user_data is None:
             return False
-        
-        return self._fb_util.update_document(collection_name='userdata',document_id=user_id,key='data',value=play_datum)
+        print(user_data)
+
+        try:
+            user_playdata = user_data.get('playdata', [])
+        except:
+            print(f'playdata not found in user data: {user_data}')
+            return False
+
+        index = len(user_playdata)
+        tmp_play_datum = {'index': index, 'data': play_datum} 
+        # Firestore の配列に要素を追加
+        return self._fb_util.update_document_array(collecion_name='userdata',document_id=user_id,key='playdata',value=tmp_play_datum)
 
     def delete_user(self, user_id:str)->bool:
         return self._fb_util.delete_document(collection_name='userdata',document_id=user_id)

@@ -83,7 +83,7 @@ async def fetch(video_id: str):
         # ファイルをストリームとして返す
         async def file_streamer():
             async with aiofiles.open(tmp_file_path, mode="rb") as tmp_file:
-                while chunk := await tmp_file.read(1024):
+                while chunk := await tmp_file.read(2048):
                     yield chunk
             os.remove(tmp_file_path)  # 一時ファイルの削除
 

@@ -1,7 +1,7 @@
 import json
 import os
 import sys
-from typing import List, Dict
+from typing import List, Dict, Union
 sys.path.append('../')
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from fastapi import APIRouter, status, Query
@@ -19,7 +19,7 @@ class UpdateUserRequest(BaseModel):
     password: str
 
 class PlayDataRequest(BaseModel):
-    play_datum: Dict
+    play_datum: List[Dict[str, Union[str, bool, int]]]
 
 class LoginRequest(BaseModel):
     username: str
@@ -134,6 +134,7 @@ async def get_play_data(user_id: str):
 # POST: プレイデータを追加
 @users_endpoint.post("/users/playdata/{user_id}", tags=["users"])
 async def add_play_data(user_id: str, play_data: PlayDataRequest):
+    print(user_id,play_data)
     try:
         if not user_id or not play_data.play_datum:
             return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content={"message": "User ID and play data are required"})
@@ -159,6 +160,7 @@ async def delete_play_data(user_id: str):
         else:
             return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"message": "Failed to delete play data"})
     except Exception as e:
+        print(e)
         return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"message": str(e)})
 
 # POST: ログイン
