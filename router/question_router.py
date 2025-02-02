@@ -55,7 +55,6 @@ async def download(playlist_id: List[str] = Query(..., title="Playlist IDs")):
             'title': answer_title,
             'original_file_path': f"./origin_mp3/{video_id}.mp3"
         }
-        print(question_dict)
 
         return JSONResponse(status_code=status.HTTP_200_OK, content=question_dict)
 

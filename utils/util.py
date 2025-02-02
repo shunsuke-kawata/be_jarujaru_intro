@@ -86,7 +86,6 @@ def get_answer_title(original_title:str,group:int):
     return return_title
 
 def generate_fernet_key_from_env() -> bytes:
-
     # 環境変数から文字列を取得
     key_str = config.DECRYPTION_KEY
     if not key_str:
@@ -101,28 +100,17 @@ def generate_fernet_key_from_env() -> bytes:
     return fernet_key
 
 def encrypt_string(plaintext:str, key:str)->str:
-    
     # Fernetオブジェクトを作成
     f = Fernet(key)
-    
-        # メッセージをバイト列に変換
     plaintext_bytes = plaintext.encode()
-
     # メッセージを暗号化
     encrypted_message = f.encrypt(plaintext_bytes)
-
-    #暗号化キーを生成
-    
     return encrypted_message
 
 def decrypt_string(encrypted_message:str, key:str)->str:
     # Fernetオブジェクトを作成
     f = Fernet(bytes(key))
-    
     # メッセージを復号
     decrypted_message = f.decrypt(encrypted_message)
-    
-    # バイト列を文字列に変換
     plaintext = decrypted_message.decode()
-    
     return plaintext
