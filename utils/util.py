@@ -8,10 +8,10 @@ sys.path.append('../')
 import config
 
 #動画音声を取得する関数
-def download_mp3(playlist_url:str, playlist_items:int, max_downloads=1):
+def download_mp3(playlist_url:str, playlist_items:int,tmp_id:str,max_downloads=1):
     # オプションを指定
     ydl_opts = {
-        'outtmpl': './origin_mp3/%(id)s.%(ext)s',
+        'outtmpl': f'./origin_mp3/{tmp_id}_%(id)s.%(ext)s',
         'format': 'bestaudio',
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',  

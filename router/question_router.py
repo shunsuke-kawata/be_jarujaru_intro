@@ -1,5 +1,6 @@
 import io
 import os
+import uuid
 import aiofiles
 from fastapi import APIRouter, HTTPException, status, Query
 from fastapi.responses import JSONResponse, StreamingResponse
@@ -34,7 +35,8 @@ async def download(playlist_id: List[str] = Query(..., title="Playlist IDs")):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Invalid playlist data")
 
     selected_index = random.randint(1, playlist_count)
-    result_info = download_mp3(playlist_url=playlist_url, playlist_items=selected_index)
+    tmp_id = str(uuid.uuid4())
+    result_info = download_mp3(playlist_url=playlist_url, playlist_items=selected_index,tmp_id=tmp_id)
 
     if len(result_info.get('entries', [])) > 0:
         video_info = result_info['entries'][0]
@@ -53,6 +55,7 @@ async def download(playlist_id: List[str] = Query(..., title="Playlist IDs")):
         question_dict = {
             'id': video_id,
             'title': answer_title,
+            'tmp_id': tmp_id,
             'original_file_path': f"./origin_mp3/{video_id}.mp3"
         }
 
@@ -62,8 +65,9 @@ async def download(playlist_id: List[str] = Query(..., title="Playlist IDs")):
 
 #ダウンロードしたデータをバイト形式で返却する
 @question_endpoint.get("/question/fetch/{video_id}", tags=["question"])
-async def fetch(video_id: str):
-    mp3_path = f"./origin_mp3/{video_id}.mp3"
+async def fetch(video_id: str,tmp_id: str = Query(...)):
+    print(video_id,tmp_id)
+    mp3_path = f"./origin_mp3/{tmp_id}_{video_id}.mp3"
 
     if not os.path.exists(mp3_path):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="File not found")
