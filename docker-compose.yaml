@@ -11,7 +11,7 @@ services:
     volumes:
       - ./:/tmp/work
     ports:
-      - "${BACKEND_PORT}:${BACKEND_PORT}" 
+      - "${BACKEND_PORT}:8000" 
     tty: true
 
   fe-app:
@@ -26,5 +26,5 @@ services:
     volumes:
       - ../fe_jarujaru_intro/:/tmp/work
     ports:
-      - "${FRONTEND_PORT}:${FRONTEND_PORT}" 
+      - "${FRONTEND_PORT}:3000" 
     tty: true
