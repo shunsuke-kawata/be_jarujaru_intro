@@ -25,6 +25,12 @@ services:
       TZ: ${TZ}
     volumes:
       - ../fe_jarujaru_intro/:/tmp/work
+      - fe-node-modules:/tmp/work/node_modules # node_modulesをボリューム管理
+      - fe-next-folder:/tmp/work/.next
     ports:
       - "${FRONTEND_PORT}:3000" 
     tty: true
+
+volumes:
+  fe-node-modules:
+  fe-next-folder:
