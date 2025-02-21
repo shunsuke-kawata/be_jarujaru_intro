@@ -1,8 +1,9 @@
-.env
+.env*
 **/__pycache__/
 *.pyc
 url.txt
 *.mp3
 .DS_Store
 /test/*/
+/downloads/
 jarujaru-intro-firebase-adminsdk-stdye-de400dc892.json
