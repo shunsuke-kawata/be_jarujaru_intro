@@ -11,10 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 #CORSの設定
 origins = [
-    config.FRONTEND_SERVER_URL,
-    config.BACKEND_SERVER_URL,
-    "http://localhost",
-    "http://localhost:8080",
+    "*"
 ]
 
 #アプリケーションの作成,エンドポイントの追加
